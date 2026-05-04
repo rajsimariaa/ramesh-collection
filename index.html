@@ -550,9 +550,29 @@
     <!-- Admin Modal -->
     <div id="admin-modal" class="fixed inset-0 bg-brand-dark z-[130] invisible opacity-0 transition-all duration-300 overflow-y-auto p-6">
         <div class="max-w-6xl mx-auto py-12">
-            <div class="flex justify-between items-center mb-12">
+            <div class="flex justify-between items-center mb-8">
                 <h2 class="font-serif text-5xl font-bold">Admin Dashboard</h2>
-                <button class="close-admin glass px-6 py-2 rounded-full border border-white/10">Back to Store</button>
+                <button class="close-admin glass px-6 py-2 rounded-full border border-white/10 hover:bg-white/10 transition-all">Back to Store</button>
+            </div>
+
+            <!-- Admin Metrics Bar -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+                <div class="glass p-6 rounded-2xl border border-brand-gold/20">
+                    <p class="text-xs text-gray-500 uppercase tracking-widest mb-1">Total Sales</p>
+                    <h3 id="stat-sales" class="text-3xl font-bold text-brand-gold">₹0</h3>
+                </div>
+                <div class="glass p-6 rounded-2xl border border-white/5">
+                    <p class="text-xs text-gray-500 uppercase tracking-widest mb-1">Total Orders</p>
+                    <h3 id="stat-orders" class="text-3xl font-bold">0</h3>
+                </div>
+                <div class="glass p-6 rounded-2xl border border-white/5">
+                    <p class="text-xs text-gray-500 uppercase tracking-widest mb-1">Pending Orders</p>
+                    <h3 id="stat-pending" class="text-3xl font-bold text-orange-400">0</h3>
+                </div>
+                <div class="glass p-6 rounded-2xl border border-white/5">
+                    <p class="text-xs text-gray-500 uppercase tracking-widest mb-1">Customers</p>
+                    <h3 id="stat-customers" class="text-3xl font-bold">0</h3>
+                </div>
             </div>
             
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -994,41 +1014,62 @@
             window.loadAdminOrders = async () => {
                 const list = document.getElementById('admin-orders-list');
                 if (!list) return;
+                
                 const { data, error } = await supabaseClient.from('orders').select('*').order('created_at', { ascending: false });
                 if (error || !data) return;
-                
-                list.innerHTML = data.map(o => {
-                    const isShipped = o.status === 'shipped';
-                    const isCancelled = o.status === 'cancelled';
-                    const canEdit = !isShipped && !isCancelled;
-                    
-                    return `
-                        <div class="glass p-6 rounded-2xl border border-white/5 ${isCancelled ? 'opacity-50' : ''}">
-                            <div class="flex justify-between items-start mb-2">
-                                <h5 class="font-bold">${o.customer_name}</h5>
-                                <span class="px-2 py-1 rounded-full text-[8px] font-bold uppercase ${o.status === 'pending' ? 'bg-yellow-500/20 text-yellow-500' : (o.status === 'shipped' ? 'bg-green-500/20 text-green-500' : 'bg-brand-gold/20 text-brand-gold')}">${o.status.replace('_', ' ')}</span>
+
+                // Update Metrics
+                const totalSales = data.reduce((acc, o) => acc + (o.status !== 'cancelled' ? o.total_amount : 0), 0);
+                const pendingOrders = data.filter(o => o.status === 'pending').length;
+                const uniqueCustomers = new Set(data.map(o => o.user_id)).size;
+
+                if (document.getElementById('stat-sales')) document.getElementById('stat-sales').innerText = `₹${totalSales.toLocaleString()}`;
+                if (document.getElementById('stat-orders')) document.getElementById('stat-orders').innerText = data.length;
+                if (document.getElementById('stat-pending')) document.getElementById('stat-pending').innerText = pendingOrders;
+                if (document.getElementById('stat-customers')) document.getElementById('stat-customers').innerText = uniqueCustomers;
+
+                list.innerHTML = data.length === 0 ? '<p class="text-center text-gray-500 py-12">No orders found.</p>' : '';
+                list.innerHTML += data.map(o => `
+                    <div class="glass p-6 rounded-2xl border border-white/5 flex flex-col md:flex-row justify-between gap-6 transition-all hover:border-brand-gold/20">
+                        <div class="space-y-2">
+                            <div class="flex items-center gap-3">
+                                <span class="text-xs font-bold px-3 py-1 rounded-full bg-brand-gold/10 text-brand-gold border border-brand-gold/20 uppercase tracking-wider">${o.status.replace('_', ' ')}</span>
+                                <span class="text-gray-500 text-xs">${new Date(o.created_at).toLocaleString()}</span>
                             </div>
-                            <p class="text-[10px] text-gray-500 mb-4">${o.shipping_address}</p>
-                            <div class="flex flex-col gap-3">
-                                <div class="flex justify-between items-center">
-                                    <p class="text-brand-gold font-bold">₹${o.total_amount}</p>
-                                    ${canEdit ? `
-                                        <div class="flex gap-2">
-                                            <button onclick="updateOrderStatus('${o.id}', 'accepted')" class="text-[8px] bg-white/5 hover:bg-brand-gold hover:text-brand-dark px-2 py-1 rounded transition-all">Accept</button>
-                                            <button onclick="updateOrderStatus('${o.id}', 'in_transit')" class="text-[8px] bg-white/5 hover:bg-brand-gold hover:text-brand-dark px-2 py-1 rounded transition-all">Transit</button>
-                                            <button onclick="updateOrderStatus('${o.id}', 'shipped')" class="text-[8px] bg-blue-500/20 hover:bg-blue-500 text-blue-500 hover:text-white px-2 py-1 rounded transition-all">Ship</button>
-                                        </div>
-                                    ` : `<p class="text-[10px] text-gray-500">${isShipped ? 'Order Finalized' : 'Order Cancelled'}</p>`}
-                                </div>
+                            <h5 class="text-lg font-bold">${o.customer_name || 'Guest User'}</h5>
+                            <p class="text-sm text-gray-400 max-w-md">${o.shipping_address || 'No address provided'}</p>
+                            <div class="flex flex-wrap gap-2 mt-2">
+                                ${o.items ? o.items.map(i => `<span class="text-[10px] bg-white/5 px-2 py-1 rounded-lg border border-white/5">${i.name} x${i.quantity}</span>`).join('') : ''}
                             </div>
                         </div>
-                    `;
-                }).join('');
+                        <div class="flex flex-col justify-between items-end gap-4 min-w-[200px]">
+                            <p class="text-2xl font-bold text-brand-gold">₹${o.total_amount}</p>
+                            <div class="flex flex-col gap-2 w-full">
+                                <select onchange="updateOrderStatus('${o.id}', this.value)" class="bg-slate-800 border border-white/10 rounded-xl px-4 py-2 text-sm outline-none focus:border-brand-gold cursor-pointer">
+                                    <option value="pending" ${o.status === 'pending' ? 'selected' : ''}>Pending</option>
+                                    <option value="accepted" ${o.status === 'accepted' ? 'selected' : ''}>Accepted</option>
+                                    <option value="in_transit" ${o.status === 'in_transit' ? 'selected' : ''}>In Transit</option>
+                                    <option value="shipped" ${o.status === 'shipped' ? 'selected' : ''}>Shipped</option>
+                                    <option value="cancelled" ${o.status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
+                                </select>
+                                <button onclick="deleteOrder('${o.id}')" class="text-xs text-red-500 hover:text-red-400 font-bold border border-red-500/20 rounded-xl py-2 transition-all hover:bg-red-500/5">Delete Record</button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
             };
 
             window.updateOrderStatus = async (id, status) => {
-                await supabaseClient.from('orders').update({ status }).eq('id', id);
-                loadAdminOrders();
+                const { error } = await supabaseClient.from('orders').update({ status }).eq('id', id);
+                if (error) alert('Error: ' + error.message);
+                else loadAdminOrders();
+            };
+
+            window.deleteOrder = async (id) => {
+                if (!confirm('Permanently delete this order record? This cannot be undone.')) return;
+                const { error } = await supabaseClient.from('orders').delete().eq('id', id);
+                if (error) alert('Error: ' + error.message);
+                else loadAdminOrders();
             };
 
             // Add Product Form
