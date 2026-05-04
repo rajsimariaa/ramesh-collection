@@ -1,0 +1,1250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ramesh Collection | Premium Gift Shop in Charkop, Kandivali</title>
+    <meta name="description" content="Discover a curated collection of perfumes, imported chocolates, toys, and more at Ramesh Collection. Visit us in Charkop, Kandivali West for a premium shopping experience.">
+    
+    <!-- Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- QRCode.js -->
+    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Favicon (Replace with your favicon file) -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            gold: '#D4AF37',
+                            dark: '#0F172A',
+                            accent: '#F8FAFC',
+                            emerald: '#064E3B'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        .glass {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .text-gradient {
+            background: linear-gradient(to right, #D4AF37, #F59E0B);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero-bg {
+            background-image: linear-gradient(rgba(15, 23, 42, 0.85), rgba(15, 23, 42, 0.9)), url('hero.png');
+            background-size: cover;
+            background-position: center;
+        }
+        .blob {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.15) 0%, rgba(212, 175, 55, 0) 70%);
+            border-radius: 50%;
+            filter: blur(80px);
+            z-index: -1;
+        }
+    </style>
+</head>
+<body class="bg-brand-dark text-white font-sans overflow-x-hidden">
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 glass top-0">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <!-- Replace with logo.jpeg if found -->
+                <div class="w-10 h-10 bg-brand-gold rounded-full flex items-center justify-center">
+                    <span class="font-serif font-bold text-brand-dark text-xl">R</span>
+                </div>
+                <span class="font-serif text-2xl font-bold tracking-tight">Ramesh <span class="text-brand-gold">Collection</span></span>
+            </div>
+            <div class="hidden md:flex items-center gap-8">
+                <a href="#home" class="hover:text-brand-gold transition-colors">Home</a>
+                <a href="#shop" class="hover:text-brand-gold transition-colors">Shop</a>
+                <a href="#categories" class="hover:text-brand-gold transition-colors">Categories</a>
+                <a href="#services" class="hover:text-brand-gold transition-colors">Services</a>
+                <button id="cart-btn" class="relative hover:text-brand-gold transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+                    <span id="cart-count" class="absolute -top-2 -right-2 bg-brand-gold text-brand-dark text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">0</span>
+                </button>
+                <button id="auth-btn" class="bg-brand-gold text-brand-dark px-6 py-2 rounded-full hover:bg-white transition-all transform hover:scale-105 font-bold">
+                    <span id="auth-btn-text">Login</span>
+                </button>
+            </div>
+            <button id="menu-btn" class="md:hidden text-white hover:text-brand-gold transition-colors z-[70] p-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-8 h-8"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>
+            </button>
+        </div>
+        
+    </nav>
+
+    <!-- Mobile Menu Drawer (Moved outside nav for better rendering) -->
+    <div id="mobile-menu" class="md:hidden fixed inset-0 z-[100] hidden">
+        <div id="menu-content" class="relative h-full w-full bg-slate-950 p-8 flex flex-col items-center justify-center space-y-8 translate-y-full transition-transform duration-500">
+            <button id="close-menu" class="absolute top-8 right-8 text-white p-2 hover:text-brand-gold transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+            <a href="#home" class="mobile-link text-4xl font-serif font-bold hover:text-brand-gold">Home</a>
+            <a href="#shop" class="mobile-link text-4xl font-serif font-bold hover:text-brand-gold">Shop</a>
+            <a href="#categories" class="mobile-link text-4xl font-serif font-bold hover:text-brand-gold">Categories</a>
+            <a href="#services" class="mobile-link text-4xl font-serif font-bold hover:text-brand-gold">Services</a>
+            <div class="pt-12 w-full max-w-xs border-t border-white/10">
+                <button id="mobile-auth-btn" class="w-full bg-brand-gold text-brand-dark py-5 rounded-2xl font-bold text-xl shadow-2xl">
+                    <span id="mobile-auth-btn-text">Login</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero-bg min-h-screen flex items-center pt-20 px-6 relative overflow-hidden">
+        <!-- Decorative Blobs -->
+        <div class="blob -top-24 -left-24 animate-pulse"></div>
+        <div class="blob bottom-0 -right-24" style="animation-delay: 2s;"></div>
+
+        <div class="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div class="space-y-8 animate-fade-in relative z-10">
+                <div class="inline-flex items-center gap-2 px-4 py-2 bg-brand-gold/20 border border-brand-gold/30 rounded-full text-brand-gold text-sm font-semibold tracking-wider uppercase">
+                    <i data-lucide="sparkles" class="w-4 h-4"></i>
+                    Your Premium Gift Destination
+                </div>
+                <h1 class="font-serif text-6xl md:text-8xl font-bold leading-tight">
+                    Elegance in <br>
+                    <span class="text-gradient italic">Every Gift</span>
+                </h1>
+                <p class="text-xl text-gray-300 max-w-xl leading-relaxed">
+                    Explore a curated world of premium perfumes, imported chocolates, and exquisite gift items. Based in the heart of Charkop, we bring luxury closer to you.
+                </p>
+                <div class="flex flex-wrap gap-4 pt-4">
+                    <a href="#categories" class="px-8 py-4 bg-brand-gold text-brand-dark font-bold rounded-lg hover:bg-white transition-all flex items-center gap-2">
+                        Browse Collection <i data-lucide="arrow-right" class="w-5 h-5"></i>
+                    </a>
+                    <a href="tel:09867615833" class="px-8 py-4 glass border border-white/20 font-bold rounded-lg hover:bg-white/10 transition-all flex items-center gap-2">
+                        <i data-lucide="phone" class="w-5 h-5"></i> Call Now
+                    </a>
+                </div>
+                
+                <!-- Trust Badges -->
+                <div class="pt-8 flex gap-8 items-center border-t border-white/10">
+                    <div>
+                        <span class="block text-2xl font-bold text-brand-gold">5000+</span>
+                        <span class="text-xs text-gray-500 uppercase tracking-widest">Happy Clients</span>
+                    </div>
+                    <div>
+                        <span class="block text-2xl font-bold text-brand-gold">15+</span>
+                        <span class="text-xs text-gray-500 uppercase tracking-widest">Years Experience</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="relative hidden lg:block animate-fade-in" style="animation-delay: 0.5s;">
+                <div class="relative z-10 glass rounded-[3rem] p-4 overflow-hidden transform hover:scale-105 transition-transform duration-700">
+                    <img src="featured.png" alt="Featured Gifts" class="w-full h-auto rounded-[2.5rem] shadow-2xl">
+                    <div class="absolute inset-0 bg-gradient-to-t from-brand-dark/80 via-transparent to-transparent"></div>
+                    <div class="absolute bottom-10 left-10">
+                        <span class="bg-brand-gold text-brand-dark px-4 py-1 rounded-full text-xs font-bold uppercase mb-2 inline-block">Bestseller</span>
+                        <h3 class="text-3xl font-serif font-bold">Premium Hampers</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Grid -->
+    <section id="services" class="py-24 bg-slate-900/50">
+        <div class="max-w-7xl mx-auto px-6 text-center mb-16">
+            <h2 class="font-serif text-4xl font-bold mb-4">Our Premium Services</h2>
+            <p class="text-gray-400">Convenience meets luxury with our tailor-made shopping options.</p>
+        </div>
+        <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-8">
+            <div class="p-8 glass rounded-2xl hover:border-brand-gold/50 transition-all group">
+                <div class="w-16 h-16 bg-brand-gold/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-brand-gold group-hover:text-brand-dark transition-all">
+                    <i data-lucide="truck" class="w-8 h-8"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-2">Delivery</h3>
+                <p class="text-gray-400 text-sm">Gifts delivered straight to your doorstep with care.</p>
+            </div>
+            <div class="p-8 glass rounded-2xl hover:border-brand-gold/50 transition-all group">
+                <div class="w-16 h-16 bg-brand-gold/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-brand-gold group-hover:text-brand-dark transition-all">
+                    <i data-lucide="package-check" class="w-8 h-8"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-2">In-store Pick-up</h3>
+                <p class="text-gray-400 text-sm">Order online and pick up at your convenience.</p>
+            </div>
+            <div class="p-8 glass rounded-2xl hover:border-brand-gold/50 transition-all group">
+                <div class="w-16 h-16 bg-brand-gold/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-brand-gold group-hover:text-brand-dark transition-all">
+                    <i data-lucide="shopping-bag" class="w-8 h-8"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-2">In-store Shopping</h3>
+                <p class="text-gray-400 text-sm">Experience our collection in a beautiful boutique setting.</p>
+            </div>
+            <div class="p-8 glass rounded-2xl hover:border-brand-gold/50 transition-all group">
+                <div class="w-16 h-16 bg-brand-gold/10 rounded-2xl flex items-center justify-center mb-6 group-hover:bg-brand-gold group-hover:text-brand-dark transition-all">
+                    <i data-lucide="shield-check" class="w-8 h-8"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-2">On-site Services</h3>
+                <p class="text-gray-400 text-sm">Personalized gifting assistance from our experts.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Shop Section -->
+    <section id="shop" class="py-24 relative overflow-hidden">
+        <div class="absolute inset-0 bg-slate-900/20 backdrop-blur-3xl -z-10"></div>
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-20">
+                <span class="text-brand-gold font-bold tracking-[0.3em] uppercase text-xs mb-4 block animate-fade-in">Curated Selection</span>
+                <h2 class="font-serif text-6xl font-bold mb-6 text-gradient italic">The Collection</h2>
+                <div class="w-24 h-1 bg-brand-gold mx-auto rounded-full mb-8"></div>
+                
+                <!-- Enhanced Filters -->
+                <div class="flex flex-wrap justify-center gap-3 md:gap-4 no-scrollbar">
+                    <button class="filter-btn active px-8 py-3 rounded-full glass border border-brand-gold text-brand-gold text-sm font-bold transition-all shadow-lg shadow-brand-gold/10">All Items</button>
+                    <button class="filter-btn px-6 py-3 rounded-full glass text-gray-400 text-sm hover:text-white hover:border-white/20 transition-all border border-transparent">Perfumes</button>
+                    <button class="filter-btn px-6 py-3 rounded-full glass text-gray-400 text-sm hover:text-white hover:border-white/20 transition-all border border-transparent">Chocolates</button>
+                    <button class="filter-btn px-6 py-3 rounded-full glass text-gray-400 text-sm hover:text-white hover:border-white/20 transition-all border border-transparent">Toys</button>
+                    <button class="filter-btn px-6 py-3 rounded-full glass text-gray-400 text-sm hover:text-white hover:border-white/20 transition-all border border-transparent">Watches</button>
+                    <button class="filter-btn px-6 py-3 rounded-full glass text-gray-400 text-sm hover:text-white hover:border-white/20 transition-all border border-transparent">Cosmetics</button>
+                    <button class="filter-btn px-6 py-3 rounded-full glass text-gray-400 text-sm hover:text-white hover:border-white/20 transition-all border border-transparent">Stationery</button>
+                    <button class="filter-btn px-6 py-3 rounded-full glass text-gray-400 text-sm hover:text-white hover:border-white/20 transition-all border border-transparent">Beverages</button>
+                    <button class="filter-btn px-6 py-3 rounded-full glass text-gray-400 text-sm hover:text-white hover:border-white/20 transition-all border border-transparent">Gadgets</button>
+                    <button class="filter-btn px-6 py-3 rounded-full glass text-gray-400 text-sm hover:text-white hover:border-white/20 transition-all border border-transparent">Jewellery</button>
+                </div>
+            </div>
+
+            <div id="product-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10">
+                <!-- Products will be injected here via JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Categories Section (Remains the same but ID updated) -->
+    <section id="categories" class="py-24">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
+                <div>
+                    <h2 class="font-serif text-5xl font-bold mb-4 text-gradient">Explore Our World</h2>
+                    <p class="text-gray-400 max-w-lg">From luxury fragrances to delightful treats, find the perfect gift for every occasion.</p>
+                </div>
+                <div class="flex gap-4">
+                    <div class="flex items-center gap-2 px-4 py-2 glass rounded-full text-sm">
+                        <i data-lucide="clock" class="w-4 h-4 text-brand-gold"></i> Quick Visit Possible
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Category 1 -->
+                <div class="group relative overflow-hidden rounded-3xl aspect-[4/5]">
+                    <div class="absolute inset-0 bg-gradient-to-t from-brand-dark to-transparent z-10"></div>
+                    <img src="perfumes.png" alt="Perfumes" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                    <div class="absolute bottom-0 left-0 p-8 z-20">
+                        <h3 class="text-2xl font-serif font-bold mb-2">Perfumes</h3>
+                        <p class="text-gray-300 text-sm opacity-0 group-hover:opacity-100 transition-opacity">Imported and luxury fragrances for him and her.</p>
+                    </div>
+                </div>
+                <!-- Category 2 -->
+                <div class="group relative overflow-hidden rounded-3xl aspect-[4/5]">
+                    <div class="absolute inset-0 bg-gradient-to-t from-brand-dark to-transparent z-10"></div>
+                    <img src="chocolates.png" alt="Chocolates" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                    <div class="absolute bottom-0 left-0 p-8 z-20">
+                        <h3 class="text-2xl font-serif font-bold mb-2">Imported Chocolates</h3>
+                        <p class="text-gray-300 text-sm opacity-0 group-hover:opacity-100 transition-opacity">Exquisite treats from around the globe.</p>
+                    </div>
+                </div>
+                <!-- Category 3 -->
+                <div class="group relative overflow-hidden rounded-3xl aspect-[4/5]">
+                    <div class="absolute inset-0 bg-gradient-to-t from-brand-dark to-transparent z-10"></div>
+                    <img src="toys.png" alt="Kids Toys" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                    <div class="absolute bottom-0 left-0 p-8 z-20">
+                        <h3 class="text-2xl font-serif font-bold mb-2">Kids' Toys</h3>
+                        <p class="text-gray-300 text-sm opacity-0 group-hover:opacity-100 transition-opacity">Educational and fun toys for all ages.</p>
+                    </div>
+                </div>
+                <!-- Category 4 -->
+                <div class="group relative overflow-hidden rounded-3xl aspect-[4/5]">
+                    <div class="absolute inset-0 bg-gradient-to-t from-brand-dark to-transparent z-10"></div>
+                    <img src="watches.png" alt="Watches" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                    <div class="absolute bottom-0 left-0 p-8 z-20">
+                        <h3 class="text-2xl font-serif font-bold mb-2">Watches</h3>
+                        <p class="text-gray-300 text-sm opacity-0 group-hover:opacity-100 transition-opacity">Timeless elegance for every wrist.</p>
+                    </div>
+                </div>
+                <!-- Category 5 -->
+                <div class="group relative overflow-hidden rounded-3xl aspect-[4/5]">
+                    <div class="absolute inset-0 bg-gradient-to-t from-brand-dark to-transparent z-10"></div>
+                    <img src="cosmetics.png" alt="Cosmetics" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                    <div class="absolute bottom-0 left-0 p-8 z-20">
+                        <h3 class="text-2xl font-serif font-bold mb-2">Cosmetics</h3>
+                        <p class="text-gray-300 text-sm opacity-0 group-hover:opacity-100 transition-opacity">Premium skincare and beauty essentials.</p>
+                    </div>
+                </div>
+                <!-- Category 6 -->
+                <div class="group relative overflow-hidden rounded-3xl aspect-[4/5]">
+                    <div class="absolute inset-0 bg-gradient-to-t from-brand-dark to-transparent z-10"></div>
+                    <img src="stationery.png" alt="Stationery" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                    <div class="absolute bottom-0 left-0 p-8 z-20">
+                        <h3 class="text-2xl font-serif font-bold mb-2">Stationery</h3>
+                        <p class="text-gray-300 text-sm opacity-0 group-hover:opacity-100 transition-opacity">Fancy stationery and imported goods.</p>
+                    </div>
+                </div>
+                <!-- Category 7 -->
+                <div class="group relative overflow-hidden rounded-3xl aspect-[4/5]">
+                    <div class="absolute inset-0 bg-gradient-to-t from-brand-dark to-transparent z-10"></div>
+                    <img src="beverages.png" alt="Imported Beverages" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                    <div class="absolute bottom-0 left-0 p-8 z-20">
+                        <h3 class="text-2xl font-serif font-bold mb-2">Imported Beverages</h3>
+                        <p class="text-gray-300 text-sm opacity-0 group-hover:opacity-100 transition-opacity">Premium drinks and refreshing beverages from around the world.</p>
+                    </div>
+                </div>
+                <!-- Category 8 -->
+                <div class="group relative overflow-hidden rounded-3xl aspect-[4/5]">
+                    <div class="absolute inset-0 bg-gradient-to-t from-brand-dark to-transparent z-10"></div>
+                    <img src="gadgets.png" alt="Electronic Gadgets" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                    <div class="absolute bottom-0 left-0 p-8 z-20">
+                        <h3 class="text-2xl font-serif font-bold mb-2">Electronic Gadgets</h3>
+                        <p class="text-gray-300 text-sm opacity-0 group-hover:opacity-100 transition-opacity">Modern electronics and innovative gadgets for daily life.</p>
+                    </div>
+                </div>
+                <!-- Category 9 -->
+                <div class="group relative overflow-hidden rounded-3xl aspect-[4/5]">
+                    <div class="absolute inset-0 bg-gradient-to-t from-brand-dark to-transparent z-10"></div>
+                    <img src="jewellery.png" alt="Imitation Jewellery" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                    <div class="absolute bottom-0 left-0 p-8 z-20">
+                        <h3 class="text-2xl font-serif font-bold mb-2">Imitation Jewellery</h3>
+                        <p class="text-gray-300 text-sm opacity-0 group-hover:opacity-100 transition-opacity">Stunning fashion jewellery for every occasion.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact & Location Section -->
+    <section id="visit" class="py-24 bg-brand-accent/5">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                <div class="space-y-8">
+                    <h2 class="font-serif text-5xl font-bold">Visit Our Boutique</h2>
+                    <div class="space-y-6">
+                        <div class="flex gap-4 items-start">
+                            <div class="w-12 h-12 glass rounded-xl flex items-center justify-center shrink-0">
+                                <i data-lucide="map-pin" class="text-brand-gold"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-lg">Our Location</h4>
+                                <p class="text-gray-400">Shop No-3, Plot No-9, Dwarka Society, RDP1, Sector 2 Charkop, Kandivali West, Mumbai, Maharashtra 400067</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-4 items-start">
+                            <div class="w-12 h-12 glass rounded-xl flex items-center justify-center shrink-0">
+                                <i data-lucide="phone" class="text-brand-gold"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-lg">Contact Us</h4>
+                                <p class="text-gray-400">098676 15833</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-4 items-start">
+                            <div class="w-12 h-12 glass rounded-xl flex items-center justify-center shrink-0">
+                                <i data-lucide="clock" class="text-brand-gold"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-bold text-lg">Store Hours</h4>
+                                <p class="text-gray-400">Monday - Sunday: 9:00 AM - 10:30 PM</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pt-8">
+                        <h4 class="font-bold mb-4 text-sm uppercase tracking-widest text-gray-400">We Accept</h4>
+                        <div class="flex gap-6 text-gray-300">
+                            <div class="flex items-center gap-2">
+                                <i data-lucide="credit-card" class="w-5 h-5 text-brand-gold"></i> Credit & Debit Cards
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <i data-lucide="nfc" class="w-5 h-5 text-brand-gold"></i> NFC Payments
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="h-[500px] rounded-3xl overflow-hidden glass p-4 relative group">
+                    <!-- Placeholder for Map -->
+                    <iframe 
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3767.8973685456434!2d72.8252!3d19.2061!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7b73b22987111%3A0xf6f0309996d93617!2sRamesh%20Collection!5e0!3m2!1sen!2sin!4v1714850000000!5m2!1sen!2sin" 
+                        width="100%" 
+                        height="100%" 
+                        style="border:0; border-radius: 1.5rem;" 
+                        allowfullscreen="" 
+                        loading="lazy" 
+                        referrerpolicy="no-referrer-when-downgrade">
+                    </iframe>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer class="bg-brand-dark border-t border-white/5 pt-20 pb-10">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-12 mb-16">
+                <div class="col-span-1 md:col-span-2">
+                    <h2 class="font-serif text-3xl font-bold mb-6 text-brand-gold">Ramesh Collection</h2>
+                    <p class="text-gray-400 max-w-sm mb-8 leading-relaxed">
+                        Since 1990, we have been the premier destination for luxury gifts, 
+                        imported delicacies, and exquisite fragrances in Mumbai.
+                    </p>
+                </div>
+                
+                <div>
+                    <h4 class="font-bold mb-6 uppercase tracking-widest text-sm text-gray-400">Quick Links</h4>
+                    <ul class="space-y-4 text-gray-400">
+                        <li><a href="#home" class="hover:text-brand-gold transition-all">Home</a></li>
+                        <li><a href="#shop" class="hover:text-brand-gold transition-all">Collection</a></li>
+                        <li><a href="#contact" class="hover:text-brand-gold transition-all">Visit Us</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6">
+                <p class="text-gray-500 text-sm">© 2024 Ramesh Collection. All rights reserved.</p>
+                <p class="text-gray-400 text-sm">
+                    Made with ❤️ by 
+                    <a href="https://rajsimaria.vercel.app" target="_blank" class="text-brand-gold font-bold hover:underline decoration-brand-gold decoration-2 underline-offset-4">
+                        Raj Simaria
+                    </a>
+                </p>
+            </div>
+        </div>
+        </div>
+    </footer>
+
+    <!-- Auth Modal -->
+    <div id="auth-modal" class="fixed inset-0 bg-brand-dark/95 z-[100] invisible opacity-0 transition-all duration-300 flex items-center justify-center p-6">
+        <div class="glass max-w-md w-full rounded-[2rem] p-10 relative">
+            <button class="close-auth absolute top-6 right-6 text-gray-400 hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+            <div id="auth-login-view">
+                <form id="login-form" class="space-y-4">
+                    <h3 id="auth-title" class="text-3xl font-serif font-bold mb-2">Welcome Back</h3>
+                    <p id="auth-subtitle" class="text-gray-400 mb-8">Login to manage your orders and profile.</p>
+                    
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-2">Email Address</label>
+                        <input type="email" id="auth-email" class="w-full bg-slate-800 border border-white/10 rounded-xl px-4 py-3 focus:border-brand-gold outline-none transition-all" placeholder="name@example.com" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-400 mb-2">Password</label>
+                        <input type="password" id="auth-password" class="w-full bg-slate-800 border border-white/10 rounded-xl px-4 py-3 focus:border-brand-gold outline-none transition-all" placeholder="••••••••" required>
+                    </div>
+                    <button type="submit" id="auth-submit-btn" class="w-full bg-brand-gold text-brand-dark font-bold py-4 rounded-xl hover:bg-white transition-all shadow-lg">Sign In</button>
+                    
+                    <p class="text-center text-sm text-gray-500">
+                        <span id="auth-toggle-text">Don't have an account?</span>
+                        <button type="button" id="auth-toggle-btn" class="text-brand-gold font-bold hover:underline">Sign Up</button>
+                    </p>
+
+                </form>
+            </div>
+
+            <div id="auth-profile-view" class="hidden">
+                <div class="flex items-center justify-between mb-8">
+                    <div>
+                        <h3 class="text-2xl font-serif font-bold">My Account</h3>
+                        <p id="user-email-display" class="text-gray-400 text-sm">user@example.com</p>
+                    </div>
+                    <button id="sign-out-btn" class="bg-red-500/10 text-red-500 px-4 py-2 rounded-xl text-xs font-bold hover:bg-red-500 hover:text-white transition-all">Sign Out</button>
+                </div>
+                
+                <h4 class="font-bold text-sm mb-4 uppercase tracking-widest text-gray-500">Order History</h4>
+                <div id="my-orders-list" class="space-y-4 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+                    <p class="text-center text-gray-500 py-8 text-sm">No orders yet.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cart Drawer -->
+    <div id="cart-drawer" class="fixed inset-0 z-[110] invisible pointer-events-none">
+        <div id="cart-overlay" class="absolute inset-0 bg-black/60 backdrop-blur-sm opacity-0 transition-opacity duration-300 pointer-events-auto"></div>
+        <div id="cart-content" class="absolute top-0 right-0 h-full w-full max-w-md bg-brand-dark border-l border-white/10 translate-x-full transition-transform duration-500 pointer-events-auto flex flex-col">
+            <div class="p-8 border-b border-white/10 flex justify-between items-center">
+                <h3 class="text-2xl font-serif font-bold">Your Cart</h3>
+                <button class="close-cart text-gray-400 hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+            </div>
+            <div id="cart-items" class="flex-1 overflow-y-auto p-8 space-y-6">
+                <!-- Cart items injected here -->
+            </div>
+            <div id="cart-footer" class="p-8 border-t border-white/10 space-y-4">
+                <div class="flex justify-between items-center text-xl font-bold">
+                    <span>Total</span>
+                    <span id="cart-total">₹0.00</span>
+                </div>
+                <button id="checkout-btn" class="w-full bg-brand-gold text-brand-dark font-bold py-4 rounded-xl hover:bg-white transition-all shadow-lg flex items-center justify-center gap-2">
+                    Checkout <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Checkout Modal -->
+    <div id="checkout-modal" class="fixed inset-0 bg-brand-dark/95 z-[120] invisible opacity-0 transition-all duration-300 flex items-center justify-center p-6">
+        <div class="glass max-w-2xl w-full rounded-[2rem] p-10 overflow-hidden relative">
+            <button class="close-checkout absolute top-6 right-6 text-gray-400 hover:text-white"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+            
+            <div id="checkout-steps">
+                <!-- Step 1: Details -->
+                <div id="step-details" class="space-y-6">
+                    <h3 class="text-3xl font-serif font-bold mb-6">Delivery Details</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <input type="text" id="ship-name" class="w-full bg-slate-800 border border-white/10 rounded-xl px-4 py-3 outline-none" placeholder="Full Name">
+                        <input type="text" id="ship-phone" class="w-full bg-slate-800 border border-white/10 rounded-xl px-4 py-3 outline-none" placeholder="Phone Number">
+                    </div>
+                    <textarea id="ship-address" rows="3" class="w-full bg-slate-800 border border-white/10 rounded-xl px-4 py-3 outline-none" placeholder="Full Delivery Address"></textarea>
+                    <button id="pay-now-btn" class="w-full bg-brand-gold text-brand-dark font-bold py-4 rounded-xl hover:bg-white transition-all shadow-lg">Proceed to Payment</button>
+                </div>
+
+                <!-- Step 2: Payment -->
+                <div id="step-payment" class="hidden text-center space-y-6">
+                    <h3 class="text-3xl font-serif font-bold mb-2">Scan & Pay</h3>
+                    <p class="text-gray-400">Total Amount: <span id="payment-amount" class="text-white font-bold text-xl">₹0.00</span></p>
+                    <div id="qrcode" class="bg-white p-4 inline-block rounded-2xl mx-auto shadow-2xl border-4 border-brand-gold"></div>
+                    <div class="bg-brand-gold/10 p-4 rounded-xl border border-brand-gold/30">
+                        <p class="text-brand-gold text-sm font-bold">UPI ID: rajsimariaa-2@okaxis</p>
+                    </div>
+                    <p class="text-xs text-gray-500">After payment, your order will be confirmed manually within 15 minutes.</p>
+                    <button id="confirm-order" class="w-full bg-brand-gold text-brand-dark font-bold py-4 rounded-xl hover:bg-white transition-all">I have Paid</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Modal -->
+    <div id="admin-modal" class="fixed inset-0 bg-brand-dark z-[130] invisible opacity-0 transition-all duration-300 overflow-y-auto p-6">
+        <div class="max-w-6xl mx-auto py-12">
+            <div class="flex justify-between items-center mb-12">
+                <h2 class="font-serif text-5xl font-bold">Admin Dashboard</h2>
+                <button class="close-admin glass px-6 py-2 rounded-full border border-white/10">Back to Store</button>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Add Product -->
+                <div class="lg:col-span-1 space-y-8">
+                    <div class="glass p-8 rounded-3xl h-fit">
+                        <h4 class="text-xl font-bold mb-6">Add New Product</h4>
+                        <form id="add-product-form" class="space-y-4">
+                            <input type="text" id="p-name" class="w-full bg-slate-800 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-brand-gold transition-all" placeholder="Product Name" required>
+                            <textarea id="p-desc" class="w-full bg-slate-800 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-brand-gold transition-all" placeholder="Description"></textarea>
+                            
+                            <div class="space-y-2">
+                                <label class="text-xs text-gray-500 uppercase tracking-widest px-1">Product Photo</label>
+                                <input type="file" id="p-file" accept="image/*" class="w-full bg-slate-800 border border-white/10 rounded-xl px-4 py-3 outline-none text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-brand-gold file:text-brand-dark hover:file:bg-white transition-all">
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-4">
+                                <input type="number" id="p-price" class="w-full bg-slate-800 border border-white/10 rounded-xl px-4 py-3 outline-none" placeholder="Price (₹)" required>
+                                <input type="number" id="p-stock" class="w-full bg-slate-800 border border-white/10 rounded-xl px-4 py-3 outline-none" placeholder="Stock" required>
+                            </div>
+
+                            <select id="p-cat" class="w-full bg-slate-800 border border-white/10 rounded-xl px-4 py-3 outline-none">
+                                <option>Perfumes</option>
+                                <option>Imported Chocolates</option>
+                                <option>Toys</option>
+                                <option>Watches</option>
+                                <option>Cosmetics</option>
+                                <option>Stationery</option>
+                                <option>Imported Beverages</option>
+                                <option>Electronic Gadgets</option>
+                                <option>Imitation Jewellery</option>
+                            </select>
+                            <select id="p-badge" class="w-full bg-slate-800 border border-white/10 rounded-xl px-4 py-3 outline-none">
+                                <option value="">No Badge</option>
+                                <option>Best Seller</option>
+                                <option>New Arrival</option>
+                                <option>Limited Edition</option>
+                            </select>
+                            <button type="submit" id="add-p-btn" class="w-full bg-brand-gold text-brand-dark font-bold py-4 rounded-xl hover:bg-white transition-all shadow-lg flex items-center justify-center gap-2">
+                                <span>Create Product</span>
+                            </button>
+                        </form>
+                    </div>
+
+                    <div class="glass p-6 rounded-3xl border border-brand-gold/20">
+                        <p class="text-xs text-brand-gold font-bold mb-2 uppercase tracking-widest">Storage Tip</p>
+                        <p class="text-[10px] text-gray-400 leading-relaxed">
+                            Ensure you have a public bucket named <b>'products'</b> in your Supabase Storage for direct uploads to work.
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Inventory & Orders -->
+                <div class="lg:col-span-2 space-y-12">
+                    <div class="flex gap-4 border-b border-white/5 pb-4">
+                        <button onclick="switchAdminTab('orders')" id="tab-orders" class="admin-tab active text-brand-gold font-bold border-b-2 border-brand-gold pb-4 transition-all">Orders</button>
+                        <button onclick="switchAdminTab('inventory')" id="tab-inventory" class="admin-tab text-gray-500 hover:text-white pb-4 transition-all">Inventory</button>
+                    </div>
+
+                    <div id="view-orders" class="space-y-6">
+                        <h4 class="text-xl font-bold flex items-center gap-2">
+                            <i data-lucide="shopping-bag" class="w-5 h-5 text-brand-gold"></i> Recent Orders
+                        </h4>
+                        <div id="admin-orders-list" class="space-y-4">
+                            <!-- Orders will be injected -->
+                        </div>
+                    </div>
+
+                    <div id="view-inventory" class="hidden space-y-6">
+                        <div class="flex justify-between items-center">
+                            <h4 class="text-xl font-bold flex items-center gap-2">
+                                <i data-lucide="package" class="w-5 h-5 text-brand-gold"></i> Manage Products
+                            </h4>
+                            <button onclick="loadInventory()" class="text-xs text-brand-gold hover:underline">Refresh List</button>
+                        </div>
+                        <div id="admin-inventory-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Inventory items injected here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+    <script>
+        // --- Supabase Configuration ---
+        const SUPABASE_URL = 'https://gswxoyrlveeorxenhbmj.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_sCjUIt5grCvjHcpZuKXW-Q_EgipGUvY';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- E-commerce Logic ---
+            let cart = [];
+            let currentUser = null;
+
+            // Sync User State
+            supabaseClient.auth.onAuthStateChange((event, session) => {
+                currentUser = session?.user || null;
+                const authBtnText = document.getElementById('auth-btn-text');
+                if (authBtnText) {
+                    authBtnText.innerText = currentUser ? 'My Account' : 'Sign In';
+                }
+                // Refresh data when user changes
+                if (window.loadMyOrders) window.loadMyOrders();
+            });
+
+            // UI Element Selectors
+            const authBtn = document.getElementById('auth-btn');
+            const authModal = document.getElementById('auth-modal');
+            const cartBtn = document.getElementById('cart-btn');
+            const cartDrawer = document.getElementById('cart-drawer');
+            const cartOverlay = document.getElementById('cart-overlay');
+            const productGrid = document.getElementById('product-grid');
+            const checkoutModal = document.getElementById('checkout-modal');
+            const checkoutBtn = document.getElementById('checkout-btn');
+            const menuBtn = document.getElementById('menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const menuContent = document.getElementById('menu-content');
+            const menuOverlay = document.getElementById('menu-overlay');
+            const closeMenuBtn = document.getElementById('close-menu');
+            const mobileAuthBtn = document.getElementById('mobile-auth-btn');
+
+            // Toggle Modals
+            window.toggleModal = (modal) => {
+                if (!modal) return;
+                modal.classList.toggle('invisible');
+                modal.classList.toggle('opacity-0');
+                document.body.classList.toggle('overflow-hidden');
+            };
+
+            if (authBtn) authBtn.addEventListener('click', () => toggleModal(authModal));
+            document.querySelectorAll('.close-auth').forEach(btn => btn.addEventListener('click', () => toggleModal(authModal)));
+            
+            if (cartBtn) {
+                cartBtn.addEventListener('click', () => {
+                    cartDrawer.classList.toggle('invisible');
+                    document.getElementById('cart-content').classList.toggle('translate-x-full');
+                    cartOverlay.classList.toggle('opacity-0');
+                });
+            }
+            
+            document.querySelectorAll('.close-cart').forEach(btn => btn.addEventListener('click', () => cartBtn.click()));
+            if (cartOverlay) cartOverlay.addEventListener('click', () => cartBtn.click());
+
+            // Mobile Menu Toggle
+            const toggleMobileMenu = () => {
+                if (!mobileMenu) return;
+                const isHidden = mobileMenu.classList.contains('hidden');
+                if (isHidden) {
+                    mobileMenu.classList.remove('hidden');
+                    setTimeout(() => {
+                        menuContent.classList.remove('translate-y-full');
+                    }, 10);
+                    document.body.classList.add('overflow-hidden');
+                } else {
+                    menuContent.classList.add('translate-y-full');
+                    setTimeout(() => {
+                        mobileMenu.classList.add('hidden');
+                    }, 500);
+                    document.body.classList.remove('overflow-hidden');
+                }
+            };
+
+            if (menuBtn) menuBtn.addEventListener('click', toggleMobileMenu);
+            if (closeMenuBtn) closeMenuBtn.addEventListener('click', toggleMobileMenu);
+            document.querySelectorAll('.mobile-link').forEach(link => link.addEventListener('click', toggleMobileMenu));
+            if (mobileAuthBtn) mobileAuthBtn.addEventListener('click', () => { toggleMobileMenu(); toggleModal(authModal); });
+
+            // Cart Logic
+            window.updateCart = () => {
+                const container = document.getElementById('cart-items');
+                const totalEl = document.getElementById('cart-total');
+                const countEl = document.getElementById('cart-count');
+                
+                if (!container || !totalEl || !countEl) return;
+                
+                container.innerHTML = cart.length === 0 ? '<div class="text-center py-12 text-gray-500">Your cart is empty</div>' : '';
+                
+                let total = 0;
+                cart.forEach(item => {
+                    total += item.price * item.quantity;
+                    container.innerHTML += `
+                        <div class="flex gap-4 items-center glass p-4 rounded-2xl">
+                            <img src="${item.image}" class="w-16 h-16 rounded-xl object-cover">
+                            <div class="flex-1">
+                                <h5 class="font-bold text-sm">${item.name}</h5>
+                                <p class="text-brand-gold text-xs">₹${item.price}</p>
+                            </div>
+                            <div class="flex items-center gap-3 bg-white/5 rounded-lg px-2">
+                                <button onclick="changeQty('${item.id}', -1)" class="text-gray-400 hover:text-white">-</button>
+                                <span class="text-sm font-bold w-4 text-center">${item.quantity}</span>
+                                <button onclick="changeQty('${item.id}', 1)" class="text-gray-400 hover:text-white">+</button>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                totalEl.innerText = `₹${total.toFixed(2)}`;
+                countEl.innerText = cart.reduce((acc, i) => acc + i.quantity, 0);
+                countEl.classList.toggle('hidden', cart.length === 0);
+            };
+
+            window.addToCart = (id, name, price, image) => {
+                if (!currentUser) {
+                    alert('Please Sign In to add items to your cart');
+                    toggleModal(authModal);
+                    return;
+                }
+                const existing = cart.find(i => i.id === id);
+                if (existing) {
+                    existing.quantity++;
+                } else {
+                    cart.push({ id, name, price, image, quantity: 1 });
+                }
+                updateCart();
+                if (cartDrawer && cartDrawer.classList.contains('invisible')) {
+                    cartBtn.click();
+                }
+            };
+
+            window.changeQty = (id, delta) => {
+                const index = cart.findIndex(i => i.id === id);
+                if (index === -1) return;
+                cart[index].quantity += delta;
+                if (cart[index].quantity <= 0) cart.splice(index, 1);
+                updateCart();
+            };
+
+            // Checkout Flow
+            if (checkoutBtn) {
+                checkoutBtn.addEventListener('click', () => {
+                    if (!currentUser) {
+                        alert('Please Sign In to proceed to checkout');
+                        toggleModal(authModal);
+                        return;
+                    }
+                    if (cart.length === 0) return alert('Your cart is empty');
+                    toggleModal(checkoutModal);
+                });
+            }
+
+            const payNowBtn = document.getElementById('pay-now-btn');
+            if (payNowBtn) {
+                payNowBtn.addEventListener('click', () => {
+                    const nameInput = document.getElementById('ship-name');
+                    const addressInput = document.getElementById('ship-address');
+                    if (!nameInput.value || !addressInput.value) return alert('Please fill details');
+                    
+                    document.getElementById('step-details').classList.add('hidden');
+                    document.getElementById('step-payment').classList.remove('hidden');
+                    
+                    const total = cart.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+                    document.getElementById('payment-amount').innerText = `₹${total.toFixed(2)}`;
+                    
+                    // Generate QR Code
+                    const upiUrl = `upi://pay?pa=rajsimariaa-2@okaxis&pn=RameshCollection&am=${total}&cu=INR&tn=Order_from_Web`;
+                    const qrContainer = document.getElementById('qrcode');
+                    if (qrContainer) {
+                        qrContainer.innerHTML = '';
+                        new QRCode(qrContainer, {
+                            text: upiUrl,
+                            width: 250,
+                            height: 250,
+                            colorDark : "#000000",
+                            colorLight : "#ffffff",
+                            correctLevel : QRCode.CorrectLevel.H
+                        });
+                    }
+                });
+            }
+
+            // Confirm Payment & Save Order
+            const confirmOrderBtn = document.getElementById('confirm-order');
+            if (confirmOrderBtn) {
+                confirmOrderBtn.addEventListener('click', async () => {
+                    confirmOrderBtn.disabled = true;
+                    confirmOrderBtn.innerText = 'Confirming...';
+
+                    const orderData = {
+                        user_id: currentUser ? currentUser.id : null,
+                        items: cart,
+                        total_amount: cart.reduce((acc, item) => acc + (item.price * item.quantity), 0),
+                        status: 'pending',
+                        shipping_address: document.getElementById('ship-address').value,
+                        customer_name: document.getElementById('ship-name').value,
+                        payment_id: 'UPI_' + Date.now()
+                    };
+
+                    const { error } = await supabaseClient.from('orders').insert([orderData]);
+
+                    if (error) {
+                        alert('Error placing order: ' + error.message);
+                        confirmOrderBtn.disabled = false;
+                        confirmOrderBtn.innerText = 'I have Paid';
+                    } else {
+                        alert('Order Placed Successfully! We will confirm your payment soon.');
+                        cart = [];
+                        updateCart();
+                        toggleModal(checkoutModal);
+                    }
+                });
+            }
+
+            // Load Products from Supabase
+            window.loadProducts = async (category = 'All Items') => {
+                if (!productGrid) return;
+                productGrid.innerHTML = '<div class="col-span-full text-center py-12"><div class="animate-spin rounded-full h-12 w-12 border-t-2 border-brand-gold mx-auto mb-4"></div><p class="text-gray-400">Loading the collection...</p></div>';
+                
+                // Select only safe columns to prevent "column not found" errors
+                let query = supabaseClient.from('products').select('id, name, description, price, category, image_url, stock');
+                if (category !== 'All Items') query = query.eq('category', category);
+                
+                const { data, error } = await query.order('created_at', { ascending: false });
+                
+                if (error) {
+                    console.error('Fetch Error:', error);
+                    productGrid.innerHTML = `<div class="col-span-full text-center py-12"><p class="text-red-500 mb-2">Connection Issue</p><p class="text-xs text-gray-500">${error.message}</p></div>`;
+                    return;
+                }
+
+                if (data.length === 0) {
+                    productGrid.innerHTML = `
+                        <div class="col-span-full py-32 text-center">
+                            <div class="w-24 h-24 bg-brand-gold/5 rounded-full flex items-center justify-center mx-auto mb-8 border border-brand-gold/10">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 text-brand-gold opacity-50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="m2 7 4.41-4.41A2 2 0 0 1 7.83 2h8.34a2 2 0 0 1 1.42.59L22 7"/><path d="M2 7v13a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7"/><path d="M10 12h4"/><path d="M2 7h20"/></svg>
+                            </div>
+                            <h4 class="text-2xl font-serif font-bold mb-2">Collection Empty</h4>
+                            <p class="text-gray-500 max-w-sm mx-auto mb-8">We are currently curating new luxury items. Stay tuned!</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                productGrid.innerHTML = data.map(p => {
+                    const isOutOfStock = p.stock <= 0;
+                    const isFewStock = p.stock > 0 && p.stock <= 5;
+                    
+                    // Robust Badge Handling (Fail-safe for missing database columns)
+                    let badgeHTML = '';
+                    try {
+                        if (isOutOfStock) {
+                            badgeHTML = `<span class="absolute top-4 left-4 bg-red-500 text-white text-[10px] font-bold px-3 py-1 rounded-full z-10 uppercase">Out of Stock</span>`;
+                        } else if (p.badge) {
+                            badgeHTML = `<span class="absolute top-4 left-4 bg-brand-gold text-brand-dark text-[10px] font-bold px-3 py-1 rounded-full z-10 uppercase">${p.badge}</span>`;
+                        } else if (isFewStock) {
+                            badgeHTML = `<span class="absolute top-4 left-4 bg-orange-500 text-white text-[10px] font-bold px-3 py-1 rounded-full z-10 uppercase">Only ${p.stock} Left</span>`;
+                        }
+                    } catch (e) {
+                        console.warn('Badge rendering skipped:', e);
+                    }
+
+                    const safeName = (p.name || 'Untitled').replace(/'/g, "\\'");
+                    const price = p.price || 0;
+                    const img = p.image_url || 'featured.png';
+                    const category = p.category || 'Luxury';
+                    
+                    return `
+                        <div class="glass p-4 rounded-[2.5rem] group hover:border-brand-gold/50 transition-all relative">
+                            ${badgeHTML}
+                            <div class="aspect-square rounded-[2rem] overflow-hidden mb-4 relative ${isOutOfStock ? 'grayscale opacity-50' : ''}">
+                                <img src="${img}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                                ${!isOutOfStock ? `<button onclick="addToCart('${p.id}', '${safeName}', ${price}, '${img}')" class="absolute bottom-4 right-4 bg-brand-gold text-brand-dark p-3 rounded-2xl opacity-0 group-hover:opacity-100 translate-y-4 group-hover:translate-y-0 transition-all shadow-xl">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                                </button>` : ''}
+                            </div>
+                            <div class="px-2">
+                                <span class="text-xs text-gray-500 uppercase tracking-widest">${category}</span>
+                                <h4 class="font-bold text-lg mb-1 truncate">${p.name || 'Premium Item'}</h4>
+                                <p class="text-brand-gold font-bold">₹${price}</p>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            };
+
+            // Category Filtering
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active', 'border-brand-gold', 'text-brand-gold'));
+                    btn.classList.add('active', 'border-brand-gold', 'text-brand-gold');
+                    loadProducts(btn.innerText);
+                });
+            });
+
+            // Tab Switching
+            window.switchAdminTab = (tab) => {
+                const views = { orders: document.getElementById('view-orders'), inventory: document.getElementById('view-inventory') };
+                const tabs = { orders: document.getElementById('tab-orders'), inventory: document.getElementById('tab-inventory') };
+
+                Object.values(views).forEach(v => v && v.classList.add('hidden'));
+                Object.values(tabs).forEach(t => t && t.classList.remove('active', 'text-brand-gold', 'border-b-2', 'border-brand-gold'));
+
+                if(views[tab]) views[tab].classList.remove('hidden');
+                if(tabs[tab]) tabs[tab].classList.add('active', 'text-brand-gold', 'border-b-2', 'border-brand-gold');
+
+                if(tab === 'inventory') loadInventory();
+                if(tab === 'orders') loadAdminOrders();
+            };
+
+            // Inventory Management
+            window.loadInventory = async () => {
+                const container = document.getElementById('admin-inventory-list');
+                if (!container) return;
+                container.innerHTML = '<div class="col-span-full text-center py-12 text-gray-500">Loading...</div>';
+                const { data, error } = await supabaseClient.from('products').select('id, name, price, image_url, stock').order('created_at', { ascending: false });
+                
+                if (error || !data) {
+                    console.error('Inventory Load Error:', error);
+                    container.innerHTML = '<div class="col-span-full text-center py-12 text-red-500">Error loading inventory. Check console for details.</div>';
+                    return;
+                }
+
+                container.innerHTML = data.map(p => `
+                    <div class="glass p-4 rounded-2xl flex items-center gap-4">
+                        <img src="${p.image_url}" class="w-16 h-16 rounded-xl object-cover">
+                        <div class="flex-1 min-w-0">
+                            <h5 class="font-bold truncate text-sm">${p.name}</h5>
+                            <p class="text-[10px] text-gray-500">Stock: ${p.stock} | ₹${p.price}</p>
+                        </div>
+                        <div class="flex gap-1">
+                            <button onclick="updateStock('${p.id}', ${p.stock + 1})" class="p-2 hover:text-brand-gold transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v8"/><path d="M8 12h8"/></svg></button>
+                            <button onclick="deleteProduct('${p.id}')" class="p-2 hover:text-red-500 transition-colors"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg></button>
+                        </div>
+                    </div>
+                `).join('');
+            };
+
+            window.updateStock = async (id, newStock) => {
+                await supabaseClient.from('products').update({ stock: newStock }).eq('id', id);
+                loadInventory();
+                loadProducts();
+            };
+
+            window.deleteProduct = async (id) => {
+                if (!confirm('Delete this product?')) return;
+                await supabaseClient.from('products').delete().eq('id', id);
+                loadInventory();
+                loadProducts();
+            };
+
+            // Orders Management
+            window.loadAdminOrders = async () => {
+                const list = document.getElementById('admin-orders-list');
+                if (!list) return;
+                const { data, error } = await supabaseClient.from('orders').select('*').order('created_at', { ascending: false });
+                if (error || !data) return;
+                
+                list.innerHTML = data.map(o => {
+                    const isShipped = o.status === 'shipped';
+                    const isCancelled = o.status === 'cancelled';
+                    const canEdit = !isShipped && !isCancelled;
+                    
+                    return `
+                        <div class="glass p-6 rounded-2xl border border-white/5 ${isCancelled ? 'opacity-50' : ''}">
+                            <div class="flex justify-between items-start mb-2">
+                                <h5 class="font-bold">${o.customer_name}</h5>
+                                <span class="px-2 py-1 rounded-full text-[8px] font-bold uppercase ${o.status === 'pending' ? 'bg-yellow-500/20 text-yellow-500' : (o.status === 'shipped' ? 'bg-green-500/20 text-green-500' : 'bg-brand-gold/20 text-brand-gold')}">${o.status.replace('_', ' ')}</span>
+                            </div>
+                            <p class="text-[10px] text-gray-500 mb-4">${o.shipping_address}</p>
+                            <div class="flex flex-col gap-3">
+                                <div class="flex justify-between items-center">
+                                    <p class="text-brand-gold font-bold">₹${o.total_amount}</p>
+                                    ${canEdit ? `
+                                        <div class="flex gap-2">
+                                            <button onclick="updateOrderStatus('${o.id}', 'accepted')" class="text-[8px] bg-white/5 hover:bg-brand-gold hover:text-brand-dark px-2 py-1 rounded transition-all">Accept</button>
+                                            <button onclick="updateOrderStatus('${o.id}', 'in_transit')" class="text-[8px] bg-white/5 hover:bg-brand-gold hover:text-brand-dark px-2 py-1 rounded transition-all">Transit</button>
+                                            <button onclick="updateOrderStatus('${o.id}', 'shipped')" class="text-[8px] bg-blue-500/20 hover:bg-blue-500 text-blue-500 hover:text-white px-2 py-1 rounded transition-all">Ship</button>
+                                        </div>
+                                    ` : `<p class="text-[10px] text-gray-500">${isShipped ? 'Order Finalized' : 'Order Cancelled'}</p>`}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            };
+
+            window.updateOrderStatus = async (id, status) => {
+                await supabaseClient.from('orders').update({ status }).eq('id', id);
+                loadAdminOrders();
+            };
+
+            // Add Product Form
+            const addProductForm = document.getElementById('add-product-form');
+            if (addProductForm) {
+                addProductForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const btn = document.getElementById('add-p-btn');
+                    const originalText = btn.innerHTML;
+                    
+                    btn.disabled = true;
+                    btn.innerText = 'Uploading Photo...';
+
+                    try {
+                        const fileInput = document.getElementById('p-file');
+                        const file = fileInput ? fileInput.files[0] : null;
+                        let imageUrl = 'featured.png';
+
+                        if (file) {
+                            if (file.size > 5 * 1024 * 1024) {
+                                throw new Error('Photo is too large (Max 5MB)');
+                            }
+
+                            const fileName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.]/g, '_')}`;
+                            const { data: uploadData, error: uploadError } = await supabaseClient.storage.from('products').upload(fileName, file);
+                            
+                            if (uploadError) {
+                                console.warn('Photo upload failed:', uploadError.message);
+                                alert('Photo upload failed. Using default image.');
+                            } else {
+                                const { data: urlData } = supabaseClient.storage.from('products').getPublicUrl(fileName);
+                                imageUrl = urlData.publicUrl;
+                            }
+                        }
+
+                        btn.innerText = 'Finalizing Product...';
+
+                        const newProduct = {
+                            name: document.getElementById('p-name').value.trim(),
+                            description: document.getElementById('p-desc').value.trim(),
+                            price: parseFloat(document.getElementById('p-price').value) || 0,
+                            category: document.getElementById('p-cat').value,
+                            image_url: imageUrl,
+                            stock: parseInt(document.getElementById('p-stock').value) || 0,
+                            badge: document.getElementById('p-badge').value
+                        };
+
+                        const { error } = await supabaseClient.from('products').insert([newProduct]);
+                        if (error) throw error;
+
+                        alert('Product Created Successfully!');
+                        addProductForm.reset();
+                        loadInventory();
+                        loadProducts();
+                        
+                    } catch (err) {
+                        console.error('Operation failed:', err);
+                        alert('Error: ' + (err.message || 'Something went wrong.'));
+                    } finally {
+                        btn.disabled = false;
+                        btn.innerHTML = originalText;
+                    }
+                });
+            }
+
+            // Auth View Switcher
+            supabaseClient.auth.onAuthStateChange((event, session) => {
+                currentUser = session?.user || null;
+                const loginView = document.getElementById('auth-login-view');
+                const profileView = document.getElementById('auth-profile-view');
+                const authBtnText = document.getElementById('auth-btn-text');
+                const mobileAuthBtnText = document.getElementById('mobile-auth-btn-text');
+                const emailDisplay = document.getElementById('user-email-display');
+
+                if (currentUser) {
+                    if (loginView) loginView.classList.add('hidden');
+                    if (profileView) profileView.classList.remove('hidden');
+                    if (authBtnText) authBtnText.innerText = 'My Account';
+                    if (mobileAuthBtnText) mobileAuthBtnText.innerText = 'My Account';
+                    if (emailDisplay) emailDisplay.innerText = currentUser.email;
+                    loadMyOrders();
+                } else {
+                    if (loginView) loginView.classList.remove('hidden');
+                    if (profileView) profileView.classList.add('hidden');
+                    if (authBtnText) authBtnText.innerText = 'Login';
+                    if (mobileAuthBtnText) mobileAuthBtnText.innerText = 'Login';
+                }
+            });
+
+            // My Orders Logic
+            window.loadMyOrders = async () => {
+                const list = document.getElementById('my-orders-list');
+                if (!list || !currentUser) return;
+                
+                const { data, error } = await supabaseClient.from('orders').select('*').eq('user_id', currentUser.id).order('created_at', { ascending: false });
+                if (error || !data) return;
+
+                list.innerHTML = data.length === 0 ? '<p class="text-center text-gray-500 py-8 text-sm">No orders yet.</p>' : '';
+                list.innerHTML += data.map(o => {
+                    const canCancel = ['pending', 'accepted'].includes(o.status);
+                    return `
+                        <div class="glass p-4 rounded-xl border border-white/5">
+                            <div class="flex justify-between items-start mb-2">
+                                <span class="text-[10px] font-bold uppercase text-brand-gold">₹${o.total_amount}</span>
+                                <span class="px-2 py-1 rounded-full text-[8px] font-bold uppercase ${o.status === 'cancelled' ? 'bg-red-500/20 text-red-500' : 'bg-brand-gold/20 text-brand-gold'}">${o.status.replace('_', ' ')}</span>
+                            </div>
+                            <div class="flex justify-between items-end">
+                                <p class="text-[10px] text-gray-400">${new Date(o.created_at).toLocaleDateString()}</p>
+                                ${canCancel ? `<button onclick="cancelMyOrder('${o.id}')" class="text-[9px] text-red-400 hover:text-red-500 font-bold">Cancel Order</button>` : ''}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            };
+
+            window.cancelMyOrder = async (id) => {
+                if (!confirm('Are you sure you want to cancel this order?')) return;
+                const { error } = await supabaseClient.from('orders').update({ status: 'cancelled' }).eq('id', id).eq('user_id', currentUser.id);
+                if (error) alert('Error cancelling order: ' + error.message);
+                else loadMyOrders();
+            };
+
+            // Login/Signup Toggle Logic
+            let isSignUp = false;
+            const authToggleBtn = document.getElementById('auth-toggle-btn');
+            const authTitle = document.getElementById('auth-title');
+            const authSubtitle = document.getElementById('auth-subtitle');
+            const authSubmitBtn = document.getElementById('auth-submit-btn');
+            const authToggleText = document.getElementById('auth-toggle-text');
+
+            if (authToggleBtn) {
+                authToggleBtn.addEventListener('click', () => {
+                    isSignUp = !isSignUp;
+                    authTitle.innerText = isSignUp ? 'Create Account' : 'Welcome Back';
+                    authSubtitle.innerText = isSignUp ? 'Join our luxury community today.' : 'Login to manage your orders and profile.';
+                    authSubmitBtn.innerText = isSignUp ? 'Create Account' : 'Sign In';
+                    authToggleText.innerText = isSignUp ? 'Already have an account?' : "Don't have an account?";
+                    authToggleBtn.innerText = isSignUp ? 'Sign In' : 'Sign Up';
+                });
+            }
+
+            // Login Logic
+            const loginForm = document.getElementById('login-form');
+            if (loginForm) {
+                loginForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const email = document.getElementById('auth-email').value;
+                    const pass = document.getElementById('auth-password').value;
+                    
+                    // Admin Bypass
+                    if(email === 'rajsimariaa@gmail.com' && pass === 'rajs@123') {
+                        toggleModal(authModal);
+                        toggleModal(document.getElementById('admin-modal'));
+                        loadAdminOrders();
+                        return;
+                    }
+
+                    authSubmitBtn.disabled = true;
+                    authSubmitBtn.innerText = isSignUp ? 'Creating...' : 'Signing In...';
+
+                    if (isSignUp) {
+                        const { error } = await supabaseClient.auth.signUp({ email, password: pass });
+                        if (error) alert('Sign Up Error: ' + error.message);
+                        else alert('Account created! Please check your email for confirmation or sign in.');
+                    } else {
+                        const { error } = await supabaseClient.auth.signInWithPassword({ email, password: pass });
+                        if (error) alert('Login Error: ' + error.message);
+                    }
+                    
+                    authSubmitBtn.disabled = false;
+                    authSubmitBtn.innerText = isSignUp ? 'Create Account' : 'Sign In';
+                });
+            }
+
+            const signOutBtn = document.getElementById('sign-out-btn');
+            if (signOutBtn) {
+                signOutBtn.addEventListener('click', async () => {
+                    await supabaseClient.auth.signOut();
+                    toggleModal(authModal);
+                    cart = [];
+                    updateCart();
+                });
+            }
+
+
+            const closeAdminBtn = document.querySelector('.close-admin');
+            if (closeAdminBtn) closeAdminBtn.addEventListener('click', () => toggleModal(document.getElementById('admin-modal')));
+            
+            const closeCheckoutBtn = document.querySelector('.close-checkout');
+            if (closeCheckoutBtn) closeCheckoutBtn.addEventListener('click', () => toggleModal(checkoutModal));
+            
+            // Navbar & Scroll
+            window.addEventListener('scroll', () => {
+                const nav = document.querySelector('nav');
+                if (nav) {
+                    window.scrollY > 50 ? nav.classList.add('py-2', 'bg-brand-dark/90') : nav.classList.remove('py-2', 'bg-brand-dark/90');
+                }
+            });
+
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    const href = this.getAttribute('href');
+                    if (href !== '#' && href.startsWith('#')) {
+                        const target = document.querySelector(href);
+                        if (target) {
+                            e.preventDefault();
+                            target.scrollIntoView({ behavior: 'smooth' });
+                        }
+                    }
+                });
+            });
+
+            // Initial Load
+            loadProducts();
+            if (typeof lucide !== 'undefined') lucide.createIcons();
+        });
+    </script>
+</body>
+</html>
