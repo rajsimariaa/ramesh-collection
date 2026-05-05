@@ -31,7 +31,8 @@ CREATE TABLE IF NOT EXISTS orders (
   status TEXT DEFAULT 'pending',
   payment_id TEXT,
   shipping_address TEXT,
-  customer_name TEXT
+  customer_name TEXT,
+  customer_phone TEXT
 );
 
 -- 2. Constraints & Cleanup

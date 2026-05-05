@@ -1217,8 +1217,9 @@
             if (payNowBtn) {
                 payNowBtn.addEventListener('click', () => {
                     const nameInput = document.getElementById('ship-name');
+                    const phoneInput = document.getElementById('ship-phone');
                     const addressInput = document.getElementById('ship-address');
-                    if (!nameInput.value || !addressInput.value) return alert('Please fill details');
+                    if (!nameInput.value || !phoneInput.value || !addressInput.value) return alert('Please fill all details');
                     
                     document.getElementById('step-details').classList.add('hidden');
                     document.getElementById('step-payment').classList.remove('hidden');
@@ -1257,6 +1258,7 @@
                         status: 'pending',
                         shipping_address: document.getElementById('ship-address').value,
                         customer_name: document.getElementById('ship-name').value,
+                        customer_phone: document.getElementById('ship-phone').value,
                         payment_id: 'UPI_' + Date.now()
                     };
 
@@ -1499,6 +1501,10 @@
                                 <span class="text-gray-500 text-xs">${new Date(o.created_at).toLocaleString()}</span>
                             </div>
                             <h5 class="text-lg font-bold">${o.customer_name || 'Guest User'}</h5>
+                            <div class="flex items-center gap-2 text-sm text-brand-gold font-bold">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l2.27-2.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                                <span>${o.customer_phone || 'No phone'}</span>
+                            </div>
                             <p class="text-sm text-gray-400 max-w-md">${o.shipping_address || 'No address provided'}</p>
                             <div class="flex flex-wrap gap-2 mt-2">
                                 ${o.items ? o.items.map(i => `<span class="text-[10px] bg-white/5 px-2 py-1 rounded-lg border border-white/5">${i.name} x${i.quantity}</span>`).join('') : ''}
@@ -1507,13 +1513,16 @@
                         <div class="flex flex-col justify-between items-end gap-4 min-w-[200px]">
                             <p class="text-2xl font-bold text-brand-gold">₹${o.total_amount}</p>
                             <div class="flex flex-col gap-2 w-full">
-                                <select onchange="updateOrderStatus('${o.id}', this.value)" class="bg-slate-800 border border-white/10 rounded-xl px-4 py-2 text-sm outline-none focus:border-brand-gold cursor-pointer">
-                                    <option value="pending" ${o.status === 'pending' ? 'selected' : ''}>Pending</option>
-                                    <option value="accepted" ${o.status === 'accepted' ? 'selected' : ''}>Accepted</option>
-                                    <option value="in_transit" ${o.status === 'in_transit' ? 'selected' : ''}>In Transit</option>
-                                    <option value="shipped" ${o.status === 'shipped' ? 'selected' : ''}>Shipped</option>
-                                    <option value="cancelled" ${o.status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
-                                </select>
+                                ${o.status === 'shipped' ? 
+                                    `<div class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-xl px-4 py-2 text-sm font-bold text-center">Completed & Shipped</div>` :
+                                    `<select onchange="updateOrderStatus('${o.id}', this.value)" class="bg-slate-800 border border-white/10 rounded-xl px-4 py-2 text-sm outline-none focus:border-brand-gold cursor-pointer">
+                                        <option value="pending" ${o.status === 'pending' ? 'selected' : ''}>Pending</option>
+                                        <option value="accepted" ${o.status === 'accepted' ? 'selected' : ''}>Accepted</option>
+                                        <option value="in_transit" ${o.status === 'in_transit' ? 'selected' : ''}>In Transit</option>
+                                        <option value="shipped" ${o.status === 'shipped' ? 'selected' : ''}>Shipped</option>
+                                        <option value="cancelled" ${o.status === 'cancelled' ? 'selected' : ''}>Cancelled</option>
+                                    </select>`
+                                }
                                 <button onclick="deleteOrder('${o.id}')" class="text-xs text-red-500 hover:text-red-400 font-bold border border-red-500/20 rounded-xl py-2 transition-all hover:bg-red-500/5">Delete Record</button>
                             </div>
                         </div>
